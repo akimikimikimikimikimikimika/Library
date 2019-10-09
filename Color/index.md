@@ -6,9 +6,13 @@ Color Libraryは,色に関する各種機能を提供するJavaScriptライブ�
 - ダウンロードして使う
 	1. [ここをクリック](https://akimikimikimikimikimikimika.github.io/Library/Color/Color.js "Color Library")して,ライブラリをダウンロードする
 	2. あなたのWebサイトにライブラリをアップロードして,HTMLに次のコードを追加する
-```HTML
+	```HTML
 	<script src="ライブラリのURL"></script>
-```
+	```
+
+- Testerで使う  
+	[Tester](https://akimikimikimikimikimikimika.github.io/Tester/ "Tester") のJavaScriptのテスト項目においては, `use("Color")` を実行すると簡単にライブラリをインポートできる。
+
 
 ### 色の基本
 - RGB
