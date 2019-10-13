@@ -1,1 +1,1 @@
-importScripts("SW/SW.js");cacheManager({name:"Library",build:[2019,10,10],list:["./Color/Color.js","./Math/Math.js","./SW/SW.js"]});
+importScripts("SW/SW.js");cacheManager({name:"Library",build:[2019,10,13],list:["./Color/Color.js","./Math/Math.js","./SW/SW.js"]});
