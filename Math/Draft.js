@@ -24,16 +24,24 @@
 	/* Complex value initializer */
 	let cn=(()=>{
 		let a=args=>{
-			let a=args.map(a=>gcv(a));
+			let a=Array.from(args).map(a=>gcv(a));
 			let o={x:0,y:0};
 			a.forEach(v=>o={x:o.x+v.x,y:o.y+v.y});
 			return cn(o.x,o.y);
 		};
 		let m=args=>{
-			let a=args.map(a=>gcv(a,{x:1,y:0}));
+			let a=Array.from(args).map(a=>gcv(a,{x:1,y:0}));
 			let o={x:1,y:0};
 			a.forEach(v=>o={x:o.x*v.x-o.y*v.y,y:o.x*v.y+o.y*v.x});
 			return cn(o.x,o.y);
+		};
+		let d=(rf,rt)=>{
+			let f=gcv(rf,{x:1,y:0}),t=gcv(rt,{x:1,y:0});
+			let d=t.r**2;
+			return cn(
+				(f.x*t.x+f.y*t.y)/d,
+				(-f.x*t.y+f.y*t.x)/d
+			);
 		};
 		let w={
 			get:(t,p)=>{
@@ -80,12 +88,14 @@
 			let valueOf=()=>o.x;
 			let add=args=>a(Array.from(args).concat(o));
 			let multiply=args=>m(Array.from(args).concat(o));
+			let div=t=>d(o,t);
 			let o={
 				x:x-0,y:y-0,
 				toString:()=>toString(),
 				valueOf:()=>valueOf(),
 				add:(...args)=>add(args),
-				multiply:(...args)=>multiply(args)
+				multiply:(...args)=>multiply(args),
+				div:divisor=>div(divisor)
 			};
 			if (isNaN(o.x)) o.x=0;
 			if (isNaN(o.y)) o.y=0;
@@ -96,8 +106,9 @@
 	let gcv=(v,d)=>{
 		if (!(isNaN(v.x-0)||isNaN(v.y-0))) return cn(v.x,v.y);
 		else if (!isNaN(v-0)) return cn(v,0);
-		else if (d) cn(d.x,d.y);
-		else cn(0,0);
+		else if (d===NaN) return NaN;
+		else if (d) return cn(d.x,d.y);
+		else return cn(0,0);
 	};
 	base.Complex=cn;
 
@@ -322,32 +333,32 @@
 		};
 
 		return a=>{
-			let x=parseFloat(a);
-			if (isNaN(x)) return NaN;
+			let x=gcv(a,NaN);
+			if (x===NaN) return NaN;
 			setup();
-			var y=(x-0.5)*log(x)-x+cv;
+			var y=cn(x.real-0.5,x.image).multiply(log(x)).add(cn(-x.real+cv,-x.image));
 			c.forEach((c,i)=>{
-				var v=c/2/(i+1);
-				for (var n=0;n<=i;n++) v/=x+1+n;
-				y+=v;
+				var v=cn(c/2/(i+1));
+				for (var n=0;n<=i;n++) v=v.div(cn(x.real+1+n,x.image));
+				y=y.add(v);
 			});
 			return y;
 		};
 	})();
 	base.lgamma=x=>lgamma(x);
 	let gamma=a=>{
-		let x=parseFloat(a);
-		if (isNaN(x)) return NaN;
+		let x=gcv(a,NaN);
+		if (x===NaN) return NaN;
 		switch (x%1) {
 			case 0:
-				if (x>0) return fact(x-1);
-				else return Infinity**(-x);
+				if (x>0) return cn(fact(x-1));
+				else return cn(Infinity);
 			case 0.5:
 				let n=x-0.5;
 				var y=sqrt(PI);
 				if (n>0) y*=semifact(2*n-1)/(2**n);
 				if (n<0) y*=((-2)**(-n))/semifact(-2*n-1);
-				return y;
+				return cn(y);
 			default:
 				if (x>0) return exp(lgamma(x));
 				if (x<0) return PI/Math.sin(PI*x)/exp(lgamma(1-x));
@@ -538,11 +549,11 @@
 			let v1=-b/(2*a);
 			let v2=(b**2)/(4*a**2)-c/a;
 			if (v2>0) {
-				let r=v2**0.5;
+				let r=Math.sqrt(v2);
 				return [{x:v1+r,y:0},{x:v1-r,y:0}];
 			}
 			if (v2<0) {
-				let r=(-v2)**0.5;
+				let r=Math.sqrt(-v2);
 				return [{x:v1,y:+r},{x:v1,y:-r}];
 			}
 			if (v2==0) return [{x:v1,y:0}];
@@ -706,6 +717,48 @@
 		base.solve=(...args)=>solve(args);
 		base.solveWithOption=(...args)=>solveWithOption(args);
 
+	})();
+
+	/* Scientific constants */
+	(()=>{
+		let ct=(()=>{
+			let h={
+				get:(t,k)=>{
+					switch (k) {
+						case Symbol.toStringTag:return "Constant";
+						case "constructor":return Number;
+						default:return t[k];
+					}
+				}
+			};
+			return (n,v,u,p)=>{
+				let valueOf=()=>v;
+				let toString=()=>`${v.toExponential(p)} ${u} (${n})`;
+				return new Proxy({
+					name:n,
+					value:v,
+					unit:u,
+					valueOf:()=>valueOf(),
+					toString:()=>toString()
+				},h);
+			};
+		})();
+		base.Gravity=ct("Gravitational acceleration",9.80665,"㎨",5);
+		base.Atmosphere=ct("Standard atmosphere",101325,"㎩",5);
+		base.Celsius=ct("0 ℃",273.15,"K",4);
+		base.LightSpeed=ct("Speed of light",299792458,"㎧",9);
+		base.Charge=ct("Elementary charge",1.602176634e-19,"C",9);
+		base.Planck=ct("Planck constant",6.62607015e-34,"J∙s",8);
+		base.Dirac=ct("Dirac constant",1.0545718176462e-34,"J∙s",13);
+		base.Avogadro=ct("Avogadro constant",6.02214076e+23,"/㏖",8);
+		base.Boltzmann=ct("Boltzmann constant",1.380649e-23,"J/K",6);
+		base.Faraday=ct("Faraday constant",96485.33212331,"C/㏖",12);
+		base.Gas=ct("Gas constant",8.3144626181532,"J/(㏖∙K)",13);
+		base.Volume=ct("Molar volume of a gas",22.71095464e-3,"㎥/㏖",9);
+		base.Gravitation=ct("Gravitational constant",6.67430e-11,"N∙m²/㎏²",5);
+		base.Permittivity=ct("Permittivity of vacuum",8.8541878128e-12,"F/m",10);
+		base.Permeability=ct("Permeability of vacuum",1.25663706212e-6,"H/m",11);
+		base.Rydberg=ct("Rydberg constant",10973731.568160,"/m",13);
 	})();
 
 })();
