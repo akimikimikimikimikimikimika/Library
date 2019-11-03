@@ -104,7 +104,8 @@
 		return (x,y)=>Complex(x,y);
 	})();
 	let gcv=(v,d)=>{
-		if (!(isNaN(v.x-0)||isNaN(v.y-0))) return cn(v.x,v.y);
+		if (!v) return cn(0,0);
+		else if (!(isNaN(v.x-0)||isNaN(v.y-0))) return cn(v.x,v.y);
 		else if (!isNaN(v-0)) return cn(v,0);
 		else if (d===NaN) return NaN;
 		else if (d) return cn(d.x,d.y);
