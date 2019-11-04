@@ -138,20 +138,21 @@
 			let i=gcv(a),p1,m1,c1,s1,p2,m2,c2,s2;
 			let vr=t&8?+i.x:-i.y,vt=t&8?+i.y:+i.x;
 			if (t&1) {
-				let p=Math.exp(vr),m=Math.exp(-vr);
+				let p=Math.exp(+vr),m=Math.exp(-vr);
 				p1=p+m,m1=p-m;
 				c1=Math.cos(vt),s1=Math.sin(vt);
 			}
 			if (t&2) {
-				let p=Math.exp(2*vr),m=Math.exp(-2*vr);
+				let p=Math.exp(+2*vr),m=Math.exp(-2*vr);
 				p2=p+m,m2=p-m;
 				c2=Math.cos(2*vt),s2=Math.sin(2*vt);
 			}
 
-			if ((t&1)==1) {
+			if ((t&3)==3) {
+				let d=p2+2*(-1)**((t&4?1:0)+(t&8?1:0))*c2;
 				return cn(
-					(t==9?m1:p1)*(t==1?s1:c1)/+2,
-					(t==9?p1:m1)*(t==1?c1:s1)/+2
+					(t==11?m1:p1)*(t==7?s1:c1)/d*+2,
+					(t==11?p1:m1)*(t==7?c1:s1)/d*-2
 				);
 			}
 			if ((t&2)==2) {
@@ -161,11 +162,10 @@
 					(t&8?2*s2:m2*c2)/d*(-1)**(t&4?1:0)
 				);
 			}
-			if ((t&3)==3) {
-				let d=p2+2*(-1)**((t&4?1:0)+(t&8?1:0))*c2;
+			if ((t&1)==1) {
 				return cn(
-					(t==11?m1:p1)*(t==7?s1:c1)/d*+2,
-					(t==11?p1:m1)*(t==7?c1:s1)/d*-2
+					(t==9?m1:p1)*(t==1?s1:c1)/+2,
+					(t==9?p1:m1)*(t==1?c1:s1)/+2
 				);
 			}
 		};
