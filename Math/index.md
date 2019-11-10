@@ -115,6 +115,19 @@ Math Libraryは,様々な数学関数を提供するJavaScriptライブラリで
 - `multinomial(a,b,c,…)`  
 	多項係数 `(a+b+c+…)!/a!b!c!…` を返す
 
+- `det(a11,…,a1n,…,an1,…,ann)`
+	正方行列の行列式を返す  
+	指定した引数が正方行列にならない場合は null を返す
+- `inverseMatrix(a11,…,a1n,…,an1,…,ann)`
+	正方行列の逆行列を表す配列を返す (引数と同じ形式で値が並ぶ)  
+	指定した引数が正方行列にならない場合や,逆行列が存在しない場合は null を返す
+- `eigenValue(a11,…,a1n,…,an1,…,ann)`
+	正方行列の固有値の配列を返す  
+	指定した引数が正方行列にならない場合は null を返す
+- `eigenVector(a11,…,a1n,…,an1,…,ann)`
+	正方行列の固有値の配列を返す  
+	指定した引数が正方行列にならない場合は null を返す
+
 - `solve(a,b,…,c,d)`  
 	整式からなる方程式 `axⁿ+bxⁿ⁻¹+…+cx+d=0` の実数解を返す
 - `solveWithOption(a,b,…,c,d,option)`  

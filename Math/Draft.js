@@ -1,21 +1,10 @@
 (()=>{
-	/* searching for base object */
-	var base;
-	(()=>{
-		try{
-			base=window;
-		}catch(e){
-			try{
-				base=self;
-			}
-			catch(e){}
-		}
-		if (!base) return;
-	})();
+
+	/* Adding custom method for Number object */
 	let proto=Number.prototype;
 
 	/* exporting functions in Math */
-	"asin,acos,atan,asinh,acosh,atanh,pow,expm1,log,log1p,log2,log10,atan2,hypot,abs,sign,sqrt,cbrt,floor,ceil,trunc,round,max,min,random,PI,E,LN2,LN10,LOG2E,LOG10E".split(",").forEach(v=>base[v]=Math[v]);
+	"asin,acos,atan,asinh,acosh,atanh,pow,expm1,log,log1p,log2,log10,atan2,hypot,abs,sign,sqrt,cbrt,floor,ceil,trunc,round,max,min,random,PI,E,LN2,LN10,LOG2E,LOG10E".split(",").forEach(v=>self[v]=Math[v]);
 	M_PI=PI;
 	M_E=E;
 	TAU=2*PI;
@@ -111,27 +100,27 @@
 		else if (d) return cn(d.x,d.y);
 		else return cn(0,0);
 	};
-	base.Complex=cn;
+	self.Complex=cn;
 
 	let exp=a=>{
 		let v=gcv(a);
 		let r=Math.exp(v.x),t=v.y;
 		return cn(r*Math.cos(t),r*Math.sin(t));
 	};
-	base.exp=x=>exp(x);
+	self.exp=x=>exp(x);
 
 	let log=a=>{
 		let v=gcv(a);
 		return cn(Math.log(v.r),v.t);
 	};
-	base.log=base.ln=x=>log(x);
+	self.log=self.ln=x=>log(x);
 
 	let pow=(a1,a2)=>{
 		let x1=gcv(a1),x2=gcv(a2);
 		if ((x1.image==0)&&(x2.image==0)) return Math.pow(x1.real,x2.real);
 		else return exp(log(x1).multiply(x2));
 	};
-	base.pow=(x1,x2)=>pow(x1,x2);
+	self.pow=(x1,x2)=>pow(x1,x2);
 
 	(()=>{
 		let f=(a,t)=>{
@@ -185,35 +174,35 @@
 		];
 		a.forEach(p=>eval(`
 			let ${p[0]}=x=>f(x,${p[1]});
-			base.${p[0]}=x=>${p[0]}(x);
+			self.${p[0]}=x=>${p[0]}(x);
 		`));
 	})();
 
 	/* custom functions */
 
 	let radian=v=>v*PI/180;
-	base.radian=x=>radian(x);
+	self.radian=x=>radian(x);
 	proto.radian=function(){return radian(this);};
 
 	let degree=v=>v/180*PI;
-	base.degree=x=>degree(x);
+	self.degree=x=>degree(x);
 	proto.degree=function(){return degree(this);};
 
 	let clamp=(v,min,max)=>min(max(v,min),max);
-	base.clamp=(x,min,max)=>clamp(x,min,max);
+	self.clamp=(x,min,max)=>clamp(x,min,max);
 	proto.clamp=function(min,max){return clamp(this,min,max);};
 
 	let sum=args=>{
 		let a=args.map(v=>v-0).filter(v=>!isNaN(v));
 		return a.reduce((p,c)=>p+c,0);
 	};
-	base.sum=(...values)=>sum(values);
+	self.sum=(...values)=>sum(values);
 
 	let product=args=>{
 		let a=args.map(v=>v-0).filter(v=>!isNaN(v));
 		return a.reduce((p,c)=>p+c,1);
 	};
-	base.product=(...values)=>product(values);
+	self.product=(...values)=>product(values);
 
 	let lcm=args=>{
 		let a=args.map(v=>max(parseInt(v),1)).filter(v=>!isNaN(v));
@@ -223,7 +212,7 @@
 		for (;a.some(n=>l%n);l+=m);
 		return l;
 	};
-	base.lcm=(...values)=>lcm(values);
+	self.lcm=(...values)=>lcm(values);
 
 	let gcd=args=>{
 		let a=args.map(v=>parseInt(v)).filter(v=>!isNaN(v));
@@ -241,7 +230,7 @@
 		}
 		else return null;
 	};
-	base.gcd=base.gcm=(...values)=>gcd(values);
+	self.gcd=self.gcm=(...values)=>gcd(values);
 
 	let factorize=a=>{
 		let v=parseInt(a);
@@ -262,7 +251,7 @@
 			return l;
 		}
 	};
-	base.factorize=x=>factorize(x);
+	self.factorize=x=>factorize(x);
 
 	let combin=(rn,rr)=>{
 		let n=parseInt(rn),r=parseInt(rr);
@@ -271,7 +260,7 @@
 		for (var m=1;m<=r;m++) y*=(n-r+m)/m;
 		return Math.round(y);
 	};
-	base.combin=(n,r)=>combin(n,r);
+	self.combin=(n,r)=>combin(n,r);
 
 	let permut=(rn,rr)=>{
 		let n=parseInt(rn),r=parseInt(rr);
@@ -280,7 +269,7 @@
 		for (var m=1;m<=r;m++) y*=(n-r+m);
 		return y;
 	};
-	base.permut=(n,r)=>permut(n,r);
+	self.permut=(n,r)=>permut(n,r);
 
 	let multinomial=args=>{
 		let a=Array.from(args).map(v=>parseInt(v)).filter(v=>(!isNaN(v))&&(v>=0));
@@ -291,7 +280,7 @@
 		});
 		return Math.round(y);
 	};
-	base.multinomial=(...args)=>multinomial(args);
+	self.multinomial=(...args)=>multinomial(args);
 
 	let fact=a=>{
 		let x=parseInt(a);
@@ -300,7 +289,7 @@
 		for (var n=x;n>0;n--) y*=n;
 		return y;
 	};
-	base.fact=x=>fact(x);
+	self.fact=x=>fact(x);
 
 	let semifact=a=>{
 		let x=parseInt(a);
@@ -309,7 +298,7 @@
 		for (var n=x;n>0;n-=2) y*=n;
 		return y;
 	};
-	base.semifact=x=>semifact(x);
+	self.semifact=x=>semifact(x);
 
 	/* C. Lanczos's approximation */
 	let lgamma=(()=>{
@@ -346,7 +335,7 @@
 			return y;
 		};
 	})();
-	base.lgamma=x=>lgamma(x);
+	self.lgamma=x=>lgamma(x);
 	let gamma=a=>{
 		let x=gcv(a,NaN);
 		if (x===NaN) return NaN;
@@ -365,7 +354,7 @@
 				if (x<0) return PI/Math.sin(PI*x)/exp(lgamma(1-x));
 		}
 	};
-	base.gamma=x=>gamma(x);
+	self.gamma=x=>gamma(x);
 
 	let beta=(()=>{
 		let N=1000;
@@ -405,7 +394,7 @@
 			}
 		};
 	})();
-	base.beta=(x,y)=>beta(x,y);
+	self.beta=(x,y)=>beta(x,y);
 
 	let erf=(()=>{
 		let N=50;
@@ -424,7 +413,7 @@
 			return y;
 		};
 	})();
-	base.erf=x=>erf(x);
+	self.erf=x=>erf(x);
 
 	let invErf=(()=>{
 		let N=50,c=[1];
@@ -444,7 +433,7 @@
 			return y;
 		};
 	})();
-	base.invErf=x=>invErf(x);
+	self.invErf=x=>invErf(x);
 
 	let lambertW=a=>{
 		let x=parseFloat(a);
@@ -462,7 +451,7 @@
 		}
 		return c;
 	};
-	base.lambertW=x=>lambertW(x);
+	self.lambertW=x=>lambertW(x);
 
 	let bernoulli=a=>{
 		let n=parseInt(a);
@@ -475,10 +464,11 @@
 		}
 		return b;
 	};
-	base.bernoulli=x=>bernoulli(x);
+	self.bernoulli=x=>bernoulli(x);
 
 	/* Matrix */
 	(()=>{
+		/* Argument parsing and return data (matrix array,dimension) */
 		let pa=args=>{
 			let a=Array.from(args).map(rv=>{
 				let v=parseFloat(rv);
@@ -491,37 +481,129 @@
 			};
 			else return null;
 		};
+		/* Removing certain column and row (for cofactor) */
 		let rm=(a,d,r,c)=>{
-			return a.filter((v,i)=>{
+			return a.filter((_,i)=>{
 				if ((i>=c*d)&&(i<(c+1)*d)) return false;
 				else if ((i-r)%d==0) return false;
 				else return true;
 			});
 		};
+		/* Determinant calculator */
 		let d=(a,dim)=>{
-			if (dim==1) return a[0];
+			if (dim==0) return [0];
+			else if (dim==1) return [a[0].x,a[0].y!=0?-1:0];
 			else {
-				var v=0;
-				for (var r=0;r<dim;r++) v+=((-1)**r)*a[r]*d(rm(a,dim,r,0),dim-1);
+				var v=[0];
+				for (var r=0;r<dim;r++) if ((a[r].x!=0)||(a[r].y!=0)) {
+					let s=(-1)**r;
+					let v1=[s*a[r].x];
+					if (a[r].y!=0) v1.push(-s);
+					let v2=d(rm(a,dim,r,0),dim-1);
+					v=add(v,multiply(v1,v2));
+				}
 				return v;
 			}
 		};
+		let add=(x,y)=>{
+			let l=max(x.length,y.length);
+			let r=[];
+			for (var n=0;n<l;n++) {
+				r[n]=0;
+				if (x[n]) r[n]+=x[n];
+				if (y[n]) r[n]+=y[n];
+			}
+			return r;
+		};
+		let multiply=(x,y)=>{
+			let r=[];
+			for (var n=0;n<x.length;n++) for (var m=0;m<y.length;m++) {
+				if (!r[n+m]) r[n+m]=0;
+				r[n+m]+=x[n]*y[m];
+			}
+			return r;
+		};
+
+		/* Determinant calculation interface */
 		let det=args=>{
 			let o=pa(args);
-			if (o) return d(o.args,o.dim);
+			if (o) return d(o.args.map(v=>cn(v,0)),o.dim)[0];
 			else return null;
 		};
+		/* Calculate inverse matrix */
 		let inverseMatrix=args=>{
 			let o=pa(args);
 			if (!o) return null;
 			let dv=det(o.args);
 			if (!dv) return null;
 			let v=[];
-			for (var c=0;c<o.dim;c++) for (var r=0;r<o.dim;r++) v.push((-1)**(c+r)*d(rm(o.args,o.dim,c,r),o.dim-1)/dv);
+			for (var c=0;c<o.dim;c++) for (var r=0;r<o.dim;r++) v.push((-1)**(c+r)*det(rm(o.args,o.dim,c,r),o.dim-1)/dv);
 			return v;
 		};
-		base.det=(...matrix)=>det(matrix);
-		base.inverseMatrix=(...matrix)=>inverseMatrix(matrix);
+		/* Eigen value calculation interface */
+		let eigenValue=args=>{
+			let o=pa(args);
+			if (!o) return null;
+			let a=o.args.map((v,i)=>cn(v,i%(o.dim+1)==0?1:0));
+			let eq=d(a,o.dim);
+			return solve.apply({},eq.reverse());
+		};
+		/* Eigen vector for a given eigen value calculator */
+		let ev=(val,a,d)=>{
+			let tm=Array.from(a);
+			for (var n=0;n<d;n++) tm[n*(d+1)]-=val;
+			let done=Array(d).fill(false);
+			for (var m=0;m<d;m++) {
+				var allZero=true;
+				for (var n=d-1;n>=0;n--) {
+					allZero=allZero&&(tm[n*d+m]==0);
+					if ((!done[n])&&(tm[n*d+m]!=0)) break;
+				}
+				if (allZero) return null;
+				else if (n<0) break;
+				done[n]=true;
+				for (var p=0;p<d;p++) {
+					if ((p==n)||(tm[p*d+m]==0)) continue;
+					let r=tm[p*d+m]/tm[n*d+m];
+					for (var q=0;q<d;q++) {
+						tm[p*d+q]-=r*tm[n*d+q];
+						if (abs(tm[p*d+q])<(Number.EPSILON*100)) tm[p*d+q]=0;
+					}
+				}
+			}
+			var unit=null;
+			for (var n=0;n<d;n++) {
+				var s=true;
+				for (var m=0;m<d;m++) s=s&&(tm[n*d+m]==0);
+				if (s) {
+					if (unit!=null) return null;
+					unit=n;
+				}
+			}
+			for (var n=0;n<d;n++) {
+				if (det(rm(tm,d,unit,n))==0) continue;
+				tm[unit*d+n]=1;
+				break;
+			}
+			let im=inverseMatrix(tm);
+			if (!im) return null;
+			let v=[];
+			for (var n=0;n<d;n++) v[n]=im[n*d+unit];
+			let l=hypot.apply({},v);
+			return v.map(r=>r/l);
+		};
+		/* Eigen vector calculation interface */
+		let eigenVector=args=>{
+			let o=pa(args);
+			if (!o) return null;
+			else if (!o.dim) return null;
+			let r=eigenValue(o.args).map(v=>ev(v,o.args,o.dim));
+			return r.filter(v=>v);
+		};
+		self.det=(...matrix)=>det(matrix);
+		self.inverseMatrix=(...matrix)=>inverseMatrix(matrix);
+		self.eigenValue=(...matrix)=>eigenValue(matrix);
+		self.eigenVector=(...matrix)=>eigenVector(matrix);
 	})();
 
 	/* Solver */
@@ -713,10 +795,10 @@
 			else return s.filter(v=>v.y==0).map(v=>v.x);
 		};
 
-		base.assignValue=(x,...args)=>assignValue(x,args);
-		base.divide=(from,by)=>divide(from,by);
-		base.solve=(...args)=>solve(args);
-		base.solveWithOption=(...args)=>solveWithOption(args);
+		self.assignValue=(x,...args)=>assignValue(x,args);
+		self.divide=(from,by)=>divide(from,by);
+		self.solve=(...args)=>solve(args);
+		self.solveWithOption=(...args)=>solveWithOption(args);
 
 	})();
 
@@ -744,22 +826,22 @@
 				},h);
 			};
 		})();
-		base.Gravity=ct("Gravitational acceleration",9.80665,"㎨",5);
-		base.Atmosphere=ct("Standard atmosphere",101325,"㎩",5);
-		base.Celsius=ct("0 ℃",273.15,"K",4);
-		base.LightSpeed=ct("Speed of light",299792458,"㎧",9);
-		base.Charge=ct("Elementary charge",1.602176634e-19,"C",9);
-		base.Planck=ct("Planck constant",6.62607015e-34,"J∙s",8);
-		base.Dirac=ct("Dirac constant",1.0545718176462e-34,"J∙s",13);
-		base.Avogadro=ct("Avogadro constant",6.02214076e+23,"/㏖",8);
-		base.Boltzmann=ct("Boltzmann constant",1.380649e-23,"J/K",6);
-		base.Faraday=ct("Faraday constant",96485.33212331,"C/㏖",12);
-		base.Gas=ct("Gas constant",8.3144626181532,"J/(㏖∙K)",13);
-		base.Volume=ct("Molar volume of a gas",22.71095464e-3,"㎥/㏖",9);
-		base.Gravitation=ct("Gravitational constant",6.67430e-11,"N∙m²/㎏²",5);
-		base.Permittivity=ct("Permittivity of vacuum",8.8541878128e-12,"F/m",10);
-		base.Permeability=ct("Permeability of vacuum",1.25663706212e-6,"H/m",11);
-		base.Rydberg=ct("Rydberg constant",10973731.568160,"/m",13);
+		self.Gravity=ct("Gravitational acceleration",9.80665,"㎨",5);
+		self.Atmosphere=ct("Standard atmosphere",101325,"㎩",5);
+		self.Celsius=ct("0 ℃",273.15,"K",4);
+		self.LightSpeed=ct("Speed of light",299792458,"㎧",9);
+		self.Charge=ct("Elementary charge",1.602176634e-19,"C",9);
+		self.Planck=ct("Planck constant",6.62607015e-34,"J∙s",8);
+		self.Dirac=ct("Dirac constant",1.0545718176462e-34,"J∙s",13);
+		self.Avogadro=ct("Avogadro constant",6.02214076e+23,"/㏖",8);
+		self.Boltzmann=ct("Boltzmann constant",1.380649e-23,"J/K",6);
+		self.Faraday=ct("Faraday constant",96485.33212331,"C/㏖",12);
+		self.Gas=ct("Gas constant",8.3144626181532,"J/(㏖∙K)",13);
+		self.Volume=ct("Molar volume of a gas",22.71095464e-3,"㎥/㏖",9);
+		self.Gravitation=ct("Gravitational constant",6.67430e-11,"N∙m²/㎏²",5);
+		self.Permittivity=ct("Permittivity of vacuum",8.8541878128e-12,"F/m",10);
+		self.Permeability=ct("Permeability of vacuum",1.25663706212e-6,"H/m",11);
+		self.Rydberg=ct("Rydberg constant",10973731.568160,"/m",13);
 	})();
 
 })();
