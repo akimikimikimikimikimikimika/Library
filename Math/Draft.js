@@ -180,11 +180,11 @@
 
 	/* custom functions */
 
-	let radian=v=>v*PI/180;
+	let radian=v=>v/180*PI;
 	self.radian=x=>radian(x);
 	proto.radian=function(){return radian(this);};
 
-	let degree=v=>v/180*PI;
+	let degree=v=>v/PI*180;
 	self.degree=x=>degree(x);
 	proto.degree=function(){return degree(this);};
 
