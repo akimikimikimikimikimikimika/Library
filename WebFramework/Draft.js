@@ -8,6 +8,8 @@
 	var acceptable=true;
 	/* whether header already received */
 	var hasHeader=false;
+	/* can execute the following cues */
+	var procession=true;
 
 	let header=d=>{
 		if (!d.resources) return false;
@@ -92,6 +94,7 @@
 			for (let c of cue) {
 				let args=c.option.args.map(a=>object[a]);
 				let r=c.func(object,args,c.res);
+				if (!procession) break;
 				if (!r) continue;
 				else if (r.constructor==Promise) object[c.id]=await r;
 				else object[c.id]=r;
@@ -118,7 +121,7 @@
 		qsa:s=>document.querySelectorAll(s),
 		ap:(p,...c)=>{for (e of c) p.appendChild(e);return c[0];},
 		ib:(...e)=>{
-			let p=e[e.length-1];
+			let p=e[e.length-1].parentNode;
 			for (var n=e.length-1;n>0;n--) p.insertBefore(e[n-1],e[n]);
 			return e[0];
 		},
@@ -151,7 +154,7 @@
 		cc:(e,c)=>e.classList.contains(c),
 		tc:(e,c)=>{
 			e.classList.toggle(c);
-			if (!e.className) sc(e);
+			if (!e.className) object.sc(e);
 			return e;
 		},
 		sc:(e,c)=>{
@@ -164,6 +167,9 @@
 		mal:(m,f)=>window.matchMedia(m).addListener(f),
 		csm:s=>object.mm(`(prefers-color-scheme: ${s})`),
 		csal:(s,f)=>object.mal(`(prefers-color-scheme: ${s})`,f),
+		abort:()=>procession=false,
+		dpr:window.devicePixelRatio,
+		alone:navigator.standalone,
 		html:document.documentElement,
 		head:document.head
 	};
