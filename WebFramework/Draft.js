@@ -105,9 +105,9 @@
 	let object={
 		/* DOM functions */
 		ce:t=>document.createElement(t),
-		che:t=>document.createElementNS("http://www.w3.org/1999/xhtml",t),
-		cse:t=>document.createElementNS("http://www.w3.org/2000/svg",t),
-		cme:t=>document.createElementNS("http://www.w3.org/1998/Math/MathML",t),
+		che:t=>document.createElementNS(object.xhtmlNS,t),
+		cse:t=>document.createElementNS(object.svgNS,t),
+		cme:t=>document.createElementNS(object.mmlNS,t),
 		cdf:()=>document.createDocumentFragment(),
 		cd:(id,className,text)=>{
 			let d=object.ce("div");
@@ -132,7 +132,8 @@
 			for (var n=e.length-1;n>0;n--) p.insertBefore(e[n-1],e[n]);
 			return e[0];
 		},
-		rc:c=>c.parentNode.removeChild(c),
+		rc:c=>{if (c.parentNode) c.parentNode.removeChild(c);return c;},
+		clr:e=>{while (e.firstChild) object.rc(e.firstChild);return e;},
 		cn:e=>e.cloneNode(true),
 		ael:(e,t,f)=>{e.addEventListener(t,f);return e;},
 		ga:(e,k)=>e.getAttribute(k),
@@ -171,7 +172,10 @@
 		dpr:window.devicePixelRatio,
 		alone:navigator.standalone,
 		html:document.documentElement,
-		head:document.head
+		head:document.head,
+		xhtmlNS:"http://www.w3.org/1999/xhtml",
+		svgNS:"http://www.w3.org/2000/svg",
+		mmlNS:"http://www.w3.org/1998/Math/MathML"
 	};
 
 	window.framework=(identifier,resource)=>interface(identifier,resource);

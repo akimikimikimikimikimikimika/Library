@@ -1,1 +1,1 @@
-importScripts("SW/SW.js"); cacheManager({ name: "Library", build: [2019, 12, 27], list: ["Color/Color.js", "Math/Math.js", "SW/SW.js", "WebFramework/WF.js"] });
+importScripts("SW/SW.js"); cacheManager({ name: "Library", build: [2020, 1, 2], list: ["Color/Color.js", "Math/Math.js", "SW/SW.js", "WebFramework/WF.js"] });
